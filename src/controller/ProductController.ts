@@ -1,21 +1,24 @@
 import { Request, Response } from "express"
 import { ProductBusiness } from "../business/ProductBusiness"
 import { BaseError } from "../errors/BaseError"
+import { CreateProductInputDTO, CreateProductOutputDTO, CreateProductSchema, EditProductInputDTO, EditProductSchema } from "../dtos/ProductDTO"
+import { ZodError } from "zod"
 
 export class ProductController {
   public createProduct = async (req: Request, res: Response) => {
     try {
 
-      const input = {
+      const input = CreateProductSchema.parse({
         id: req.body.id,
         name: req.body.name,
         price: req.body.price
-      }
+      })
 
       const productBusiness = new ProductBusiness()
-      const output = await productBusiness.createProduct(input)
+      const output: CreateProductOutputDTO = await productBusiness.createProduct(input)
 
       res.status(201).send(output)
+
     } catch (error) {
       console.log(error)
 
@@ -51,18 +54,22 @@ export class ProductController {
   public editProduct = async (req: Request, res: Response) => {
     try {
 
-      const input = {
+      const input = EditProductSchema.parse({
         idToEdit: req.params.id,
         id: req.body.id,
         name: req.body.name,
         price: req.body.price
-      }
+      })
 
       const productBusiness = new ProductBusiness()
       const output = await productBusiness.editProduct(input)
 
       res.status(200).send(output)
     } catch (error) {
+
+      if (error instanceof ZodError){
+        res.status(400)
+      }
       console.log(error)
 
       if (error instanceof BaseError) {
