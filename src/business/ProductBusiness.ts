@@ -1,4 +1,5 @@
 import { ProductDatabase } from "../database/ProductDatabase"
+import { CreateProductOutputDTO } from "../dtos/ProductDTO"
 import { BadRequestError } from "../errors/BadRequestError"
 import { NotFoundError } from "../errors/NotFoundError"
 import { Product, ProductDB } from "../models/Product"
@@ -7,6 +8,7 @@ export class ProductBusiness {
   public createProduct = async (input: any) => {
     const { id, name, price } = input
 
+    // Essas validações foram substituidas pela CreateProductSchema
     if (typeof id !== "string") {
       throw new BadRequestError("'id' deve ser string")
     }
@@ -50,7 +52,7 @@ export class ProductBusiness {
 
     await productDatabase.insertProduct(newProductDB)
 
-    const output = {
+    const output: CreateProductOutputDTO = {
       message: "Produto registrado com sucesso",
       product: {
         id: newProduct.getId(),
