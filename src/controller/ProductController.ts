@@ -5,6 +5,11 @@ import { CreateProductInputDTO, CreateProductOutputDTO, CreateProductSchema, Edi
 import { ZodError } from "zod"
 
 export class ProductController {
+
+  constructor(
+    private productBusiness: ProductBusiness
+  ) { }
+
   public createProduct = async (req: Request, res: Response) => {
     try {
 
@@ -14,8 +19,7 @@ export class ProductController {
         price: req.body.price
       })
 
-      const productBusiness = new ProductBusiness()
-      const output: CreateProductOutputDTO = await productBusiness.createProduct(input)
+      const output: CreateProductOutputDTO = await this.productBusiness.createProduct(input)
 
       res.status(201).send(output)
 
@@ -36,8 +40,7 @@ export class ProductController {
         q: req.query.q
       }
 
-      const productBusiness = new ProductBusiness()
-      const output = await productBusiness.getProducts(input)
+      const output = await this.productBusiness.getProducts(input)
 
       res.status(200).send(output)
     } catch (error) {
@@ -61,13 +64,12 @@ export class ProductController {
         price: req.body.price
       })
 
-      const productBusiness = new ProductBusiness()
-      const output = await productBusiness.editProduct(input)
+      const output = await this.productBusiness.editProduct(input)
 
       res.status(200).send(output)
     } catch (error) {
 
-      if (error instanceof ZodError){
+      if (error instanceof ZodError) {
         res.status(400)
       }
       console.log(error)
@@ -87,8 +89,7 @@ export class ProductController {
         idToDelete: req.params.id
       }
 
-      const productBusiness = new ProductBusiness()
-      const output = await productBusiness.deleteProduct(input)
+      const output = await this.productBusiness.deleteProduct(input)
 
       res.status(200).send(output)
     } catch (error) {
